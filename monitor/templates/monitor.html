@@ -1,0 +1,40 @@
+
+{% extends "base.html" %}
+{% block title %}
+  Monitoramento
+{% endblock title %}
+
+{% block content %}
+
+    {% for key,value in orders.items %}
+        <div class="col-md-3">
+
+            <h2>{{key}}</h2>
+            <h4>Compra</h4>
+            R${{value.compra.preco}} | ฿{{value.compra.bitcoins}}
+            <br>
+            <h4>Venda</h4>
+            R${{value.venda.preco}} | ฿{{value.venda.bitcoins}}
+        </div>
+    {% endfor %}
+
+    <div class="col-md-12" style="margin-top: 20px;">
+        {% comment %} <h2>Oportunidades dos últimos 2 minutos</h2> {% endcomment %}
+        {% for o in oportunidades %}
+        <div class="col-md-3" style="margin:30px 0">
+            <p>{{ o }}</p>
+            <p>{{o.preco_compra}} -> {{o.preco_venda}}</p>
+            <p>Diferença: {{o.percentual }}% em <b> {{o.time}}</b></p>
+        </div>
+
+        {% endfor %}
+    </div>
+    
+
+    <!--<script>-->
+        <!--setTimeout(function(){-->
+            <!--location.reload();-->
+        <!--}, 10000);-->
+    <!--</script>-->
+
+{% endblock content %}
