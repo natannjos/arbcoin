@@ -15,6 +15,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 import urllib
+
+
 def monitor(request):
     # retorna a lista de exchanges e suas APIs
     exchanges = Exchanges.objects.all()
@@ -24,8 +26,10 @@ def monitor(request):
 
     # Adiciona os headers da requisição as APIs
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11\
+        (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*\
+        ;q=0.8',
         'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
         'Accept-Encoding': 'none',
         'Accept-Language': 'en-US,en;q=0.8',
@@ -43,7 +47,8 @@ def monitor(request):
             # converte os dados obtidos em json
             data = json.load(response)
 
-            # extrai os precos de compra e venda e quantidades de Bitcoins da exchange atual
+            # extrai os precos de compra e venda e quantidades
+            # de Bitcoins da exchange atual
             if 'ask' in data and 'bid' in data:
                 dados_de_venda = data['ask'][0]
                 dados_de_compra = data['bid'][0]
@@ -53,12 +58,14 @@ def monitor(request):
             # salva a exchange e os dados da oferta
             salva_oferta(exchange, dados_de_compra, dados_de_venda)
 
-        except:
+        except ():
             continue
-    # compara as ultimas ordens adicionadas e busca uma possivel oportunidade de transação
+    # compara as ultimas ordens adicionadas e busca uma possivel
+    # oportunidade de transação
     procura_arbitragem()
 
-    # faz uma query das oportunidades dos últimos 2 minutos para adicionar no contexto da página
+    # faz uma query das oportunidades dos últimos 2 minutos para adicionar no
+    # contexto da página
 
     return render(request, "monitor.html")
 
@@ -68,7 +75,7 @@ def procura_arbitragem():
     oportunidade de arbitragem baseada na diferença de
     precos de compra e venda de cada uma delas"""
 
-    n_exchanges = Exchanges.objects.count();
+    n_exchanges = Exchanges.objects.count()
     ofertas = Ofertas.objects.order_by('-pk')[:n_exchanges]
 
     dados_venda = [[d.exchange, d.valor_compra] for d in ofertas]
@@ -78,7 +85,8 @@ def procura_arbitragem():
     for compra in dados_compra:
         for venda in dados_venda:
             percentual_real = (1 - (compra[1] / venda[1])) * 100
-            if (percentual_real >= percentual_escolhido() and percentual_real < 100):
+            if (percentual_real >= percentual_escolhido() and
+                    percentual_real < 100):
                 oportunidade['exchange_compra'] = compra[0]
                 oportunidade['exchange_venda'] = venda[0]
                 oportunidade['preco_compra'] = compra[1]
@@ -123,8 +131,8 @@ def salva_oportunidade(oportunidade):
         return
 
     if (oportunidade['percentual'] != ultima.percentual and
-                oportunidade['preco_compra'] != ultima.preco_compra and
-                oportunidade['preco_venda'] != ultima.preco_venda):
+            oportunidade['preco_compra'] != ultima.preco_compra and
+            oportunidade['preco_venda'] != ultima.preco_venda):
         nova.exchange_compra = oportunidade['exchange_compra']
         nova.exchange_venda = oportunidade['exchange_venda']
         nova.preco_venda = oportunidade['preco_venda']
@@ -136,12 +144,13 @@ def salva_oportunidade(oportunidade):
 
 def envia_email():
     ultima = Oportunidade.objects.latest('time')
-    titulo = 'Compre na {} e venda na {}'.format(ultima.exchange_compra, ultima.exchange_venda)
+    titulo = 'Compre na {} e venda na {}'.format(
+        ultima.exchange_compra, ultima.exchange_venda)
     mensagem = "Compre na {} e venda na {}. A diferença está em {}%".format(
         ultima.exchange_compra, ultima.exchange_venda, ultima.percentual
     )
 
-    email = EmailMessage(titulo, mensagem, to=['arbcoinbot@gmail.com', 'natannjos@gmail.com'])
+    email = EmailMessage(titulo, mensagem, to=['arbcoinbot@gmail.com'])
     email.send()
 
 
@@ -158,7 +167,7 @@ class ChartData(APIView):
     permission_classes = []
 
     def get(self, request, format=None):
-        n_exchanges = Exchanges.objects.count();
+        n_exchanges = Exchanges.objects.count()
         ofertas = Ofertas.objects.order_by('-pk')[:n_exchanges]
 
         data = {}
@@ -167,7 +176,6 @@ class ChartData(APIView):
             dados_compra = [oferta.valor_compra, oferta.quant_compra]
             dados_venda = [oferta.valor_venda, oferta.quant_venda]
             exchange = oferta.exchange.name
-            hora = oferta.time
 
             data[exchange] = {
                 'asks': dados_venda,
