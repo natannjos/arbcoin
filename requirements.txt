@@ -1,6 +1,6 @@
 
-Django==1.11.4
-djangorestframework==3.6.4
+Django==2
+djangorestframework==3.7.3
 ipython==6.1.0
 ipython-genutils==0.2.0
 psycopg2

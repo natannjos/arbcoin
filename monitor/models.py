@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Ofertas(models.Model):
-    exchange = models.ForeignKey(to='Exchanges', related_name='Exchange')
+    exchange = models.ForeignKey(to='Exchanges', related_name='Exchange', on_delete=models.CASCADE)
 
     valor_compra = models.DecimalField(
         'Valor Compra', max_digits=19, decimal_places=4)
@@ -45,9 +45,9 @@ class Oportunidade(models.Model):
 
     time = models.DateTimeField('Data|Hora', auto_now_add=True)
     exchange_compra = models.ForeignKey(
-        to='Exchanges', related_name='Exchange_Comprar')
+        to='Exchanges', related_name='Exchange_Comprar', on_delete=models.CASCADE)
     exchange_venda = models.ForeignKey(
-        to='Exchanges', related_name='Exchange_Vender')
+        to='Exchanges', related_name='Exchange_Vender', on_delete=models.CASCADE)
     preco_compra = models.DecimalField(
         'Preço da compra', max_digits=19, decimal_places=4, null=True,
         blank=True)
